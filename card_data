@@ -1,17 +1,4 @@
-function onLoad()
-    self.createButton({
-        label="Create Deck",
-        click_function="spawnFromDeck",
-        function_owner=self,
-        position={0,0.3,0},
-        height=1000,
-        width=2000,
-        font_size=300
-    })
-end
-
--- Mapping
-cardMapping = {
+{
     ["1OJ-01"] = "https://drive.google.com/uc?id=1V6FaMS8UFO7y-J8tgRLZEpAmZd6nKGGc&v=1",
     ["1OJ-02"] = "https://drive.google.com/uc?id=1hhEX_9VQBR-59WUG6_WRJ2xs9ciHpbyi&v=1",
     ["1OJ-03"] = "https://drive.google.com/uc?id=1dUvwZlS0WJgAQ2GfnSRAJMaraXpzNqQB&v=1",
@@ -729,88 +716,6 @@ cardMapping = {
     ["NEED-23"] = "https://drive.google.com/uc?id=103FVf1nfs7YYrlILbISNR9XPyyN0efFy",
     ["NEED-24"] = "https://drive.google.com/uc?id=1avOrLL6XDTkuUAWwI1oEcqZlJmeEg9sO&v=1",
 }
-
-function getNotebookData(tabTitle)
-    if Notes then
-        for _, notebook in pairs(Notes.getNotebookTabs()) do
-            if notebook.title == tabTitle then
-                return notebook.body
-            end
-        end
-        print("Notebook tab '"..tabTitle.."' not found.")
-    else
-        print("Notes object not accessible.")
-    end
-    return nil
-end
-
-function spawnFromDeck()
-    local tabTitle = "Deck"
-    local deckData = getNotebookData(tabTitle)
-    if not deckData then return end
-
-    local finalDeckPosition = {x=67.93, y=5, z=1.97}  -- Spawnposition
-
-    for line in deckData:gmatch("[^\r\n]+") do
-        local qty, code = line:match("(%d+)%s*x%s*(%S+)")
-        if qty and code then
-            qty = tonumber(qty)
-            local faceURL = cardMapping[code]
-            if not faceURL then
-                print("No mapping for card: "..code)
-            else
-                spawnCard(code, qty, finalDeckPosition, faceURL)
-            end
-        else
-            print("Invalid line format in notebook: "..line)
-        end
-    end
-    print("Deck spawned successfully.")
-end
-
--- spawnfunction
-function spawnCard(code, qty, position, faceURL, backURL)
-    for i = 1, qty do
-        local cardJSON = {
-            Name = "Card",
-            Transform = {
-                posX = position.x + (i-1)*0.3,  -- offset ให้ไม่ทับกัน
-                posY = position.y,
-                posZ = position.z,
-                rotX = 0,
-                rotY = 180,
-                rotZ = 0,
-                scaleX = 2.23,
-                scaleY = 1,
-                scaleZ = 2.23
-            },
-            CardID = 100,
-            CustomDeck = {
-                ["1"] = {
-                    FaceURL = faceURL,
-                    BackURL = backURL or "https://steamusercontent-a.akamaihd.net/ugc/46818599641009896/9EEE2394F5CE4C001A681DE95AD4BA040AB393C2/",
-                    NumWidth = 1,
-                    NumHeight = 1,
-                    BackIsHidden = true,
-                    UniqueBack = false
-                }
-            }
-        }
-        local obj = spawnObjectJSON({json = JSON.encode(cardJSON)})
-        if obj then
-            obj.setName(code)
-            Wait.time(function()
-                if obj and obj.is_face_down == false then
-                    obj.flip()
-                end
-            end, 0.2)
-        end
-    end
-end
-
-if obj then
-    obj.setName(code)
-    Wait.time(function()
         if obj.rebuildCustom then obj.rebuildCustom() end
     end, 1)
 end
